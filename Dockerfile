@@ -1,9 +1,9 @@
-FROM quay.io/quarkus/quarkus-micro-image:3.11.3 AS build
+FROM quay.io/quarkus/ubi9-quarkus-micro-image:2.0 AS build
 WORKDIR /app
 COPY . .
 RUN ./mvnw package -Dnative
 
-FROM quay.io/quarkus/quarkus-micro-image:3.11.3
+FROM quay.io/quarkus/ubi9-quarkus-micro-image:2.0
 WORKDIR /work/
 COPY --from=build /app/target/*-runner /work/application
 CMD ["./application"]
