@@ -1,0 +1,13 @@
+mail-cleaner:
+  imap:
+    host:
+    port:
+    username:
+    password:
+  folders:
+    - "INBOX"
+    - "Spam"
+  blocked-senders:
+    - "spam@example.com"
+    - "junk@mail.com"
+  schedule: "5m"
