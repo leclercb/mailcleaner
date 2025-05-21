@@ -2,7 +2,7 @@ FROM registry.access.redhat.com/ubi9/ubi-minimal:9.5 AS build
 RUN microdnf update -y && microdnf install -y java-17-openjdk-devel unzip && microdnf clean all
 WORKDIR /app
 COPY . .
-RUN ./gradlew quarkusBuild -Dquarkus.native.enabled=true -Dquarkus.package.jar.enabled=false
+RUN ./gradlew build
 
 FROM quay.io/quarkus/ubi9-quarkus-micro-image:2.0
 WORKDIR /work
