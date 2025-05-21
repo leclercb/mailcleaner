@@ -1,0 +1,28 @@
+plugins {
+    id 'java'
+    id 'io.quarkus' version '3.11.0'
+}
+
+group = 'be.blit.mailcleaner'
+version = '1.0.0'
+
+repositories {
+    mavenCentral()
+}
+
+ext {
+    jakartaMailVersion = '2.0.1'
+}
+
+dependencies {
+    implementation enforcedPlatform("io.quarkus:quarkus-bom:3.11.0")
+
+    implementation 'io.quarkus:quarkus-config-yaml'
+    implementation 'io.quarkus:quarkus-scheduler'
+    
+    implementation "com.sun.mail:jakarta.mail:${jakartaMailVersion}"
+}
+
+tasks.withType(JavaCompile) {
+    options.encoding = 'UTF-8'
+}
