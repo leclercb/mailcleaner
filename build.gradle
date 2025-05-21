@@ -17,8 +17,9 @@ ext {
 dependencies {
     implementation enforcedPlatform("io.quarkus:quarkus-bom:3.11.0")
 
-    implementation 'io.quarkus:quarkus-scheduler'
     implementation 'io.quarkus:quarkus-config-yaml'
+    implementation 'io.quarkus:quarkus-scheduler'
+    
     implementation "com.sun.mail:jakarta.mail:${jakartaMailVersion}"
 }
 
