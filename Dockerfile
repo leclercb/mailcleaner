@@ -1,5 +1,5 @@
 FROM registry.access.redhat.com/ubi9/ubi-minimal:9.5 AS build
-RUN microdnf update -y && microdnf install -y unzip && microdnf clean all
+RUN microdnf update -y && microdnf install -y java-17-openjdk-devel unzip && microdnf clean all
 WORKDIR /app
 COPY . .
 RUN ./mvnw package -Dnative
