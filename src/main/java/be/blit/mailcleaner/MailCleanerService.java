@@ -25,6 +25,9 @@ public class MailCleanerService {
     @Inject
     MailCleanerConfig config;
 
+    @Inject
+    BlockedSendersService blockedSendersService;
+
     @Scheduled(every = "{mail-cleaner.schedule}")
     public void cleanMailboxes() {
         try {
@@ -100,7 +103,7 @@ public class MailCleanerService {
     }
 
     private boolean isBlocked(String sender) {
-        return config.blockedSenders().stream().anyMatch(sender::contains);
+        return blockedSendersService.getBlockedSenders().stream().anyMatch(sender::contains);
     }
 
 }

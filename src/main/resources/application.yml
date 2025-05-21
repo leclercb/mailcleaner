@@ -6,7 +6,6 @@ mail-cleaner:
     password:
   folders:
     - "INBOX"
-    - "Spam"
   blocked-senders:
     - "spam@example.com"
     - "junk@mail.com"

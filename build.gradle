@@ -18,11 +18,9 @@ dependencies {
     implementation enforcedPlatform("io.quarkus:quarkus-bom:3.11.0")
 
     implementation 'io.quarkus:quarkus-config-yaml'
+    implementation 'io.quarkus:quarkus-resteasy-reactive'
+    implementation 'io.quarkus:quarkus-resteasy-reactive-jackson'
     implementation 'io.quarkus:quarkus-scheduler'
     
     implementation "com.sun.mail:jakarta.mail:${jakartaMailVersion}"
-}
-
-tasks.withType(JavaCompile) {
-    options.encoding = 'UTF-8'
 }

@@ -7,4 +7,5 @@ RUN ./gradlew build -Dquarkus.native.enabled=true
 FROM quay.io/quarkus/ubi9-quarkus-micro-image:2.0
 WORKDIR /work
 COPY --from=build /app/target/*-runner /work/application
-CMD ["./application"]
+EXPOSE 8080
+CMD ["./application", "-Dquarkus.http.host=0.0.0.0", "-Dquarkus.config.locations=file:/config/application.yml"]
