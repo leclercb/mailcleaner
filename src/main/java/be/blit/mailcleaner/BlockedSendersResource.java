@@ -25,8 +25,8 @@ public class BlockedSendersResource {
     }
 
     @POST
-    public Response add(String email) {
-        blockedSendersService.addBlockedSender(email);
+    public Response add(BlockedSender blockedSender) {
+        blockedSendersService.addBlockedSender(blockedSender.getEmail());
         return Response.status(Response.Status.CREATED).build();
     }
 

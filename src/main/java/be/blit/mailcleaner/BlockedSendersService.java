@@ -1,38 +1,38 @@
 package be.blit.mailcleaner;
 
-import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Singleton;
+import lombok.extern.slf4j.Slf4j;
 import org.eclipse.microprofile.config.ConfigProvider;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.yaml.snakeyaml.DumperOptions;
 import org.yaml.snakeyaml.Yaml;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileWriter;
 import java.io.InputStream;
 import java.io.Writer;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeSet;
 
-@ApplicationScoped
+@Slf4j
+@Singleton
 public class BlockedSendersService {
 
-    private static final Logger LOG = LoggerFactory.getLogger(BlockedSendersService.class);
-
     private final Set<String> blockedSenders;
-    private final String configFile;
+    private final File configFile;
 
     public BlockedSendersService(MailCleanerConfig config) {
-        this.blockedSenders = new HashSet<>(config.blockedSenders());
+        this.blockedSenders = new TreeSet<>(config.blockedSenders());
 
-        this.configFile = ConfigProvider.getConfig()
+        this.configFile = new File(ConfigProvider.getConfig()
                 .getOptionalValue("quarkus.config.locations", String.class)
                 .orElseThrow(() -> new IllegalStateException("Config path not set"))
-                .replace("file:", "");
+                .replace("file:", ""));
 
-        LOG.info("Config file: {}", this.configFile);
+        log.info("Config file: {}", this.configFile.getAbsolutePath());
     }
 
     public Set<String> getBlockedSenders() {
@@ -40,20 +40,24 @@ public class BlockedSendersService {
     }
 
     public void addBlockedSender(String sender) {
-        LOG.info("Adding blocked sender \"{}\"", sender);
+        log.info("Adding blocked sender \"{}\"", sender);
         blockedSenders.add(sender);
         saveToFile();
     }
 
     public void removeBlockedSender(String sender) {
-        LOG.info("Removing blocked sender \"{}\"", sender);
+        log.info("Removing blocked sender \"{}\"", sender);
         blockedSenders.remove(sender);
         saveToFile();
     }
 
     private void saveToFile() {
         try (InputStream in = new FileInputStream(configFile)) {
-            Yaml yaml = new Yaml();
+            DumperOptions options = new DumperOptions();
+            options.setDefaultFlowStyle(DumperOptions.FlowStyle.BLOCK);
+
+            Yaml yaml = new Yaml(options);
+
             Map<String, Object> config = yaml.load(in);
 
             if (config == null) {
@@ -67,13 +71,13 @@ public class BlockedSendersService {
                 config.put("mail-cleaner", mailCleaner);
             }
 
-            mailCleaner.put("blocked-senders", blockedSenders);
+            mailCleaner.put("blocked-senders", blockedSenders.toArray());
 
             try (Writer writer = new FileWriter(configFile)) {
                 yaml.dump(config, writer);
             }
         } catch (Exception e) {
-            LOG.error("Error saving config file", e);
+            log.error("Error saving config file", e);
         }
     }
 

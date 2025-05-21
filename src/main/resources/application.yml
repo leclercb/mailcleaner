@@ -1,12 +1,9 @@
 mail-cleaner:
+  schedule: "5m"
   imap:
     host:
     port:
     username:
     password:
   folders:
-    - "INBOX"
   blocked-senders:
-    - "spam@example.com"
-    - "junk@mail.com"
-  schedule: "5m"

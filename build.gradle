@@ -12,15 +12,24 @@ repositories {
 
 ext {
     jakartaMailVersion = '2.0.1'
+    lombokVersion = '1.18.32'
+    quarkusVersion = '3.11.0'
 }
 
 dependencies {
-    implementation enforcedPlatform("io.quarkus:quarkus-bom:3.11.0")
+    compileOnly "org.projectlombok:lombok:${lombokVersion}"
+    annotationProcessor "org.projectlombok:lombok:${lombokVersion}"
+
+    implementation enforcedPlatform("io.quarkus:quarkus-bom:${quarkusVersion}")
 
     implementation 'io.quarkus:quarkus-config-yaml'
     implementation 'io.quarkus:quarkus-resteasy-reactive'
     implementation 'io.quarkus:quarkus-resteasy-reactive-jackson'
     implementation 'io.quarkus:quarkus-scheduler'
-    
+
     implementation "com.sun.mail:jakarta.mail:${jakartaMailVersion}"
+}
+
+tasks.withType(JavaCompile).configureEach {
+    options.annotationProcessorPath = configurations.annotationProcessor
 }

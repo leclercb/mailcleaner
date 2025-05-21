@@ -1,0 +1,20 @@
+= MailCleaner
+
+== Configuration file
+
+[source]
+----
+mail-cleaner:
+  schedule: 5m
+  imap:
+    host: imap.example.com
+    port: 993
+    username: myusername
+    password: mypassword
+  folders:
+  - INBOX
+  blocked-senders:
+  - test1@spam.com
+  - test2@spam.com
+  - test3@spam.com
+----

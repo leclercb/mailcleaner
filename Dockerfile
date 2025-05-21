@@ -8,4 +8,4 @@ FROM quay.io/quarkus/ubi9-quarkus-micro-image:2.0
 WORKDIR /work
 COPY --from=build /app/target/*-runner /work/application
 EXPOSE 8080
-CMD ["./application", "-Dquarkus.http.host=0.0.0.0", "-Dquarkus.config.locations=file:/config/application.yml"]
+CMD ["./application", "-Dquarkus.http.host=0.0.0.0", "-Dquarkus.config.locations=file:/config/config.yml"]
