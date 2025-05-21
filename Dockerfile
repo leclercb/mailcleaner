@@ -1,5 +1,5 @@
 FROM registry.access.redhat.com/ubi9/ubi-minimal:9.5 AS build
-RUN microdnf update -y && microdnf install -y curl java-17-openjdk-devel unzip && microdnf clean all
+RUN microdnf update -y && microdnf install -y java-17-openjdk-devel unzip && microdnf clean all
 WORKDIR /app
 COPY . .
 RUN ./gradlew build -Dquarkus.native.enabled=true
