@@ -1,6 +1,5 @@
 package be.blit.mailcleaner;
 
-import io.quarkus.runtime.util.StringUtil;
 import io.quarkus.scheduler.Scheduled;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
@@ -14,7 +13,9 @@ import jakarta.mail.search.FlagTerm;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.List;
 import java.util.Properties;
+import java.util.stream.Stream;
 
 @ApplicationScoped
 public class MailCleanerService {
@@ -26,16 +27,11 @@ public class MailCleanerService {
 
     @Scheduled(every = "{mail-cleaner.schedule}")
     public void cleanMailboxes() {
-        LOG.info("Start cleaning mailbox");
-
         try {
+            LOG.info("Start cleaning mailbox");
+
             Properties props = new Properties();
             props.put("mail.store.protocol", "imaps");
-
-            if (StringUtil.isNullOrEmpty(config.imap().host())) {
-                LOG.warn("Imap host not set, stopping cleaning mailbox");
-                return;
-            }
 
             LOG.info("Connecting to imap server {}:{}", config.imap().host(), config.imap().port());
 
@@ -49,8 +45,14 @@ public class MailCleanerService {
             );
 
             LOG.info("Connected to imap server {}:{}", config.imap().host(), config.imap().port());
+            LOG.info("Folder separator: {}", store.getDefaultFolder().getSeparator());
 
-            LOG.info("Start cleaning folders: {}", config.folders());
+            List<String> folders = Stream.of(store.getDefaultFolder().list("*")).map(Folder::getFullName).toList();
+
+            LOG.info("Mailbox contains {} folders", folders.size());
+            folders.forEach(folder -> LOG.info("Remote folder: {}", folder));
+            LOG.info("Start cleaning {} folders", config.folders().size());
+            config.folders().forEach(folder -> LOG.info("Folder to clean: {}", folder));
 
             for (String folderName : config.folders()) {
                 LOG.info("Start cleaning folder \"{}\"", folderName);
@@ -86,6 +88,8 @@ public class MailCleanerService {
 
                 LOG.info("Finished cleaning folder \"{}\"", folderName);
             }
+
+            LOG.info("Finished cleaning {} folders", config.folders().size());
 
             store.close();
 
