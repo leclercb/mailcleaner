@@ -5,6 +5,6 @@ RUN ./gradlew build --no-daemon
 
 FROM amazoncorretto:21
 WORKDIR /app
-COPY --from=build /build/build/libs/*.jar app.jar
+COPY --from=build /build/build/quarkus-app /app
 EXPOSE 8080
-ENTRYPOINT ["java", "-jar", "app.jar", "-Dquarkus.http.host=0.0.0.0", "-Dquarkus.config.locations=file:/config/config.yml"]
+ENTRYPOINT ["java", "-jar", "quarkus-run.jar", "-Dquarkus.http.host=0.0.0.0", "-Dquarkus.config.locations=file:/config/config.yml"]
