@@ -1,19 +1,10 @@
-FROM quay.io/quarkus/ubi9-quarkus-mandrel-builder-image:jdk-21 AS build
-USER root
-RUN microdnf install findutils -y
-COPY --chown=quarkus:quarkus gradlew /code/gradlew
-COPY --chown=quarkus:quarkus gradle /code/gradle
-COPY --chown=quarkus:quarkus build.gradle /code/
-COPY --chown=quarkus:quarkus settings.gradle /code/
-COPY --chown=quarkus:quarkus gradle.properties /code/
-USER quarkus
-WORKDIR /code
-COPY src /code/src
-RUN ./gradlew build -Dquarkus.native.enabled=true -Dquarkus.package.jar.enabled=false
+FROM gradle:8.14.0-jdk21-corretto AS build
+WORKDIR /build
+COPY . .
+RUN ./gradlew build --no-daemon
 
-FROM quay.io/quarkus/ubi9-quarkus-micro-image:2.0
-WORKDIR /work
-COPY --from=build /code/build/*-runner /work/application
-RUN chmod 775 /work
+FROM amazoncorretto:21
+WORKDIR /app
+COPY --from=build /build/build/libs/*.jar app.jar
 EXPOSE 8080
-CMD ["./application", "-Dquarkus.http.host=0.0.0.0", "-Dquarkus.config.locations=file:/config/config.yml"]
+ENTRYPOINT ["java", "-jar", "app.jar", "-Dquarkus.http.host=0.0.0.0", "-Dquarkus.config.locations=file:/config/config.yml"]
