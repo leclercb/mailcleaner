@@ -80,7 +80,7 @@ public class MailCleanerService {
 
                         if (isBlocked(sender)) {
                             log.info("Deleting message \"{}\" from \"{}\"", message.getSubject(), sender);
-                            //message.setFlag(Flags.Flag.DELETED, true);
+                            message.setFlag(Flags.Flag.DELETED, true);
                         }
                     }
                 }
