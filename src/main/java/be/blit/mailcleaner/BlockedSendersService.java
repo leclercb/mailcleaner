@@ -29,7 +29,7 @@ public class BlockedSendersService {
 
         this.configFile = new File(ConfigProvider.getConfig()
                 .getOptionalValue("quarkus.config.locations", String.class)
-                .orElseThrow(() -> new IllegalStateException("Config path not set"))
+                .orElseThrow(() -> new IllegalStateException("Config file not set"))
                 .replace("file:", ""));
 
         log.info("Config file: {}", this.configFile.getAbsolutePath());
