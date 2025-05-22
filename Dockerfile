@@ -9,7 +9,7 @@ COPY --chown=quarkus:quarkus gradle.properties /code/
 USER quarkus
 WORKDIR /code
 COPY src /code/src
-RUN ./gradlew build -Dquarkus.native.enabled=true
+RUN ./gradlew build -Dquarkus.native.enabled=true -Dquarkus.package.jar.enabled=false
 
 FROM quay.io/quarkus/ubi9-quarkus-micro-image:2.0
 WORKDIR /work
