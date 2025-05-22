@@ -8,4 +8,4 @@ RUN mkdir /config
 WORKDIR /app
 COPY --from=build /build/build/quarkus-app /app
 EXPOSE 8080
-ENTRYPOINT ["java", "-jar", "quarkus-run.jar", "-Dquarkus.http.host=0.0.0.0", "-Dquarkus.config.locations=file:/config/config.yml"]
+ENTRYPOINT ["java", "-Dquarkus.http.host=0.0.0.0", "-Dquarkus.config.locations=file:/config/config.yml", "-jar", "quarkus-run.jar"]
