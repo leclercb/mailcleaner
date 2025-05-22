@@ -4,6 +4,7 @@ COPY . .
 RUN ./gradlew build --no-daemon
 
 FROM amazoncorretto:21
+RUN mkdir /config
 WORKDIR /app
 COPY --from=build /build/build/quarkus-app /app
 EXPOSE 8080
