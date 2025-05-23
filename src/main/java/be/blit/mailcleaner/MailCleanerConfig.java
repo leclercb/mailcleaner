@@ -3,17 +3,20 @@ package be.blit.mailcleaner;
 import io.smallrye.config.ConfigMapping;
 
 import java.util.List;
+import java.util.Optional;
 
 @ConfigMapping(prefix = "mail-cleaner")
 public interface MailCleanerConfig {
 
+    String schedule();
+
     ImapConfig imap();
 
-    List<String> folders();
+    Optional<SpamAssassinConfig> spamassassin();
 
-    List<String> blockedSenders();
+    Optional<List<String>> folders();
 
-    String schedule();
+    Optional<List<String>> blockedSenders();
 
     interface ImapConfig {
 
@@ -24,6 +27,14 @@ public interface MailCleanerConfig {
         String username();
 
         String password();
+
+    }
+
+    interface SpamAssassinConfig {
+
+        Optional<String> host();
+
+        Optional<Integer> port();
 
     }
 

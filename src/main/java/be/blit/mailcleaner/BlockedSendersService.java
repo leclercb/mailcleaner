@@ -25,7 +25,7 @@ public class BlockedSendersService {
     private final File configFile;
 
     public BlockedSendersService(MailCleanerConfig config) {
-        this.blockedSenders = new TreeSet<>(config.blockedSenders());
+        this.blockedSenders = new TreeSet<>(config.blockedSenders().orElseGet(Collections::emptyList));
 
         this.configFile = new File(ConfigProvider.getConfig()
                 .getOptionalValue("quarkus.config.locations", String.class)

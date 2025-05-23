@@ -2,6 +2,8 @@
 
 == Configuration file
 
+The file needs to be created in the `config` folder with name `config.yml`.
+
 [source]
 ----
 mail-cleaner:
@@ -17,4 +19,31 @@ mail-cleaner:
   - test1@spam.com
   - test2@spam.com
   - test3@spam.com
+----
+
+== Docker compose
+
+[source]
+----
+services:
+  mailcleaner:
+    image: ghcr.io/leclercb/mailcleaner:main
+    container_name: mailcleaner
+    volumes:
+      - /volume1/docker/mailcleaner/config:/config:rw
+    ports:
+      - 2180:8080
+    restart: unless-stopped
+  spamassassin:
+    image: instrumentisto/spamassassin
+    container_name: spamassassin
+    ports:
+      - 783:783
+    environment:
+      - SPAMD_OPTIONS=-m 5 --allow-tell
+    restart: unless-stopped
+networks:
+  default:
+    name: bl-it
+    external: true
 ----

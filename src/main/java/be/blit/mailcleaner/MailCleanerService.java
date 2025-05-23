@@ -12,6 +12,9 @@ import jakarta.mail.Store;
 import jakarta.mail.search.FlagTerm;
 import lombok.extern.slf4j.Slf4j;
 
+import java.io.ByteArrayOutputStream;
+import java.nio.charset.StandardCharsets;
+import java.util.Collections;
 import java.util.List;
 import java.util.Properties;
 import java.util.stream.Stream;
@@ -25,6 +28,9 @@ public class MailCleanerService {
 
     @Inject
     BlockedSendersService blockedSendersService;
+
+    @Inject
+    SpamAssassinService spamAssassinService;
 
     @Scheduled(every = "{mail-cleaner.schedule}")
     public void cleanMailboxes() {
@@ -48,14 +54,17 @@ public class MailCleanerService {
             log.info("Connected to imap server {}:{}", config.imap().host(), config.imap().port());
             log.info("Folder separator: {}", store.getDefaultFolder().getSeparator());
 
-            List<String> folders = Stream.of(store.getDefaultFolder().list("*")).map(Folder::getFullName).toList();
+            List<String> remoteFolders = Stream.of(store.getDefaultFolder().list("*")).map(Folder::getFullName).toList();
 
-            log.info("Mailbox contains {} folders", folders.size());
-            folders.forEach(folder -> log.info("Remote folder: {}", folder));
-            log.info("Start cleaning {} folders", config.folders().size());
-            config.folders().forEach(folder -> log.info("Folder to clean: {}", folder));
+            log.info("Mailbox contains {} folders", remoteFolders.size());
+            remoteFolders.forEach(folder -> log.info("Remote folder: {}", folder));
 
-            for (String folderName : config.folders()) {
+            List<String> folders = config.folders().orElseGet(Collections::emptyList);
+
+            log.info("Start cleaning {} folders", folders.size());
+            folders.forEach(folder -> log.info("Folder to clean: {}", folder));
+
+            for (String folderName : folders) {
                 log.info("Start cleaning folder \"{}\"", folderName);
 
                 Folder folder = store.getFolder(folderName);
@@ -75,12 +84,22 @@ public class MailCleanerService {
                 for (Message message : messages) {
                     Address[] from = message.getFrom();
 
-                    if (from != null && from.length > 0) {
-                        String sender = from[0].toString();
+                    String sender = (from != null && from.length > 0) ? from[0].toString() : null;
 
-                        if (isBlocked(sender)) {
-                            log.info("Deleting message \"{}\" from \"{}\"", message.getSubject(), sender);
-                            message.setFlag(Flags.Flag.DELETED, true);
+                    if (sender != null && isBlocked(sender)) {
+                        log.info("Sender is in blocked senders list; deleting message \"{}\" from \"{}\"", message.getSubject(), sender);
+                        message.setFlag(Flags.Flag.DELETED, true);
+                        continue;
+                    }
+
+                    if (spamAssassinService.isSpamAssassinEnabled()) {
+                        ByteArrayOutputStream out = new ByteArrayOutputStream();
+                        message.writeTo(out);
+                        String eml = out.toString(StandardCharsets.UTF_8);
+
+                        if (spamAssassinService.isSpam(eml)) {
+                            log.info("Message was flagged as spam by SpamAssassin; deleting message \"{}\" from \"{}\"", message.getSubject(), sender);
+                            //message.setFlag(Flags.Flag.DELETED, true);
                         }
                     }
                 }
@@ -90,7 +109,7 @@ public class MailCleanerService {
                 log.info("Finished cleaning folder \"{}\"", folderName);
             }
 
-            log.info("Finished cleaning {} folders", config.folders().size());
+            log.info("Finished cleaning {} folders", folders.size());
 
             store.close();
 
