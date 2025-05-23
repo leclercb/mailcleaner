@@ -94,9 +94,16 @@ public class MailCleanerService {
                     RspamdResponse rspamdResponse = rspamdService.checkMessage(message);
 
                     if (rspamdResponse != null && rspamdResponse.isSpam()) {
-                        log.info("Message was flagged as spam by Rspamd ({}/{}); deleting message \"{}\" from \"{}\"",
-                                rspamdResponse.getScore(), rspamdResponse.getRequiredScore(), message.getSubject(), sender);
-                        //message.setFlag(Flags.Flag.DELETED, true);
+                        log.info("Message was flagged as spam by Rspamd ({}/{}); deleting message {}\"{}\" from \"{}\"",
+                                rspamdResponse.getScore(),
+                                rspamdResponse.getRequiredScore(),
+                                config.rspamd().dryRun() ? "(dry run) " : "",
+                                message.getSubject(),
+                                sender);
+
+                        if (!config.rspamd().dryRun()) {
+                            message.setFlag(Flags.Flag.DELETED, true);
+                        }
                     }
                 }
 

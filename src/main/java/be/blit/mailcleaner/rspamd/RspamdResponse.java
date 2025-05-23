@@ -29,7 +29,9 @@ public class RspamdResponse {
     @JsonProperty("message-id")
     private String messageId;
 
-    private static class Symbol {
+    @Data
+    @NoArgsConstructor
+    public static class Symbol {
 
         private String name;
         private double score;

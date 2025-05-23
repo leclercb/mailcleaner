@@ -1,10 +1,11 @@
-mp:
-  rest:
-    client:
-      rspamd:
-        url: http://rspamd:11333
+quarkus:
+  rest-client:
+    rspamd:
+      url: http://rspamd:11333
 mail-cleaner:
   schedule: "5m"
+  rspamd:
+    dry-run: true
   imap:
     host:
     port:

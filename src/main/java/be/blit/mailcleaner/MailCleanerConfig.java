@@ -10,6 +10,8 @@ public interface MailCleanerConfig {
 
     String schedule();
 
+    RspamdConfig rspamd();
+
     ImapConfig imap();
 
     Optional<List<String>> folders();
@@ -25,6 +27,12 @@ public interface MailCleanerConfig {
         String username();
 
         String password();
+
+    }
+
+    interface RspamdConfig {
+
+        boolean dryRun();
 
     }
 
