@@ -1,0 +1,13 @@
+mail-cleaner:
+  schedule: 5m
+  imap:
+    host: tata
+    port: 993
+    username: xx
+    password: yy
+  folders:
+  - INBOX
+  blocked-senders:
+  - test1@spam.com
+  - test2@spam.com
+  - test3@spam.com

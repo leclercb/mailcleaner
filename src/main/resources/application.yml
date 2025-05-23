@@ -1,3 +1,8 @@
+mp:
+  rest:
+    client:
+      rspamd:
+        url: http://rspamd:11333
 mail-cleaner:
   schedule: "5m"
   imap:
@@ -5,8 +10,5 @@ mail-cleaner:
     port:
     username:
     password:
-  spamassassin:
-    host:
-    port:
   folders:
   blocked-senders:

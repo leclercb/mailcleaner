@@ -6,13 +6,18 @@ The file needs to be created in the `config` folder with name `config.yml`.
 
 [source]
 ----
+mp:
+  rest:
+    client:
+      rspamd:
+        url: http://rspamd:11333
 mail-cleaner:
   schedule: 5m
   imap:
     host: imap.example.com
     port: 993
-    username: myusername
-    password: mypassword
+    username: my_username
+    password: my_password
   folders:
   - INBOX
   blocked-senders:
@@ -34,16 +39,10 @@ services:
     ports:
       - 2180:8080
     restart: unless-stopped
-  spamassassin:
-    image: instrumentisto/spamassassin
-    container_name: spamassassin
+  rspamd:
+    image: rspamd/rspamd
+    container_name: rspamd
     ports:
-      - 783:783
-    environment:
-      - SPAMD_OPTIONS=-m 5 --allow-tell
+      - 11333:11333
     restart: unless-stopped
-networks:
-  default:
-    name: bl-it
-    external: true
 ----

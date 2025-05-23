@@ -1,5 +1,6 @@
 package be.blit.mailcleaner;
 
+import be.blit.mailcleaner.rspamd.RspamdResponse;
 import io.quarkus.scheduler.Scheduled;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
@@ -12,8 +13,6 @@ import jakarta.mail.Store;
 import jakarta.mail.search.FlagTerm;
 import lombok.extern.slf4j.Slf4j;
 
-import java.io.ByteArrayOutputStream;
-import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import java.util.List;
 import java.util.Properties;
@@ -30,7 +29,7 @@ public class MailCleanerService {
     BlockedSendersService blockedSendersService;
 
     @Inject
-    SpamAssassinService spamAssassinService;
+    RspamdService rspamdService;
 
     @Scheduled(every = "{mail-cleaner.schedule}")
     public void cleanMailboxes() {
@@ -92,15 +91,12 @@ public class MailCleanerService {
                         continue;
                     }
 
-                    if (spamAssassinService.isSpamAssassinEnabled()) {
-                        ByteArrayOutputStream out = new ByteArrayOutputStream();
-                        message.writeTo(out);
-                        String eml = out.toString(StandardCharsets.UTF_8);
+                    RspamdResponse rspamdResponse = rspamdService.checkMessage(message);
 
-                        if (spamAssassinService.isSpam(eml)) {
-                            log.info("Message was flagged as spam by SpamAssassin; deleting message \"{}\" from \"{}\"", message.getSubject(), sender);
-                            //message.setFlag(Flags.Flag.DELETED, true);
-                        }
+                    if (rspamdResponse != null && rspamdResponse.isSpam()) {
+                        log.info("Message was flagged as spam by Rspamd ({}/{}); deleting message \"{}\" from \"{}\"",
+                                rspamdResponse.getScore(), rspamdResponse.getRequiredScore(), message.getSubject(), sender);
+                        message.setFlag(Flags.Flag.DELETED, true);
                     }
                 }
 

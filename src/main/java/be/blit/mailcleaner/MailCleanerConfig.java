@@ -12,8 +12,6 @@ public interface MailCleanerConfig {
 
     ImapConfig imap();
 
-    Optional<SpamAssassinConfig> spamassassin();
-
     Optional<List<String>> folders();
 
     Optional<List<String>> blockedSenders();
@@ -27,14 +25,6 @@ public interface MailCleanerConfig {
         String username();
 
         String password();
-
-    }
-
-    interface SpamAssassinConfig {
-
-        Optional<String> host();
-
-        Optional<Integer> port();
 
     }
 
