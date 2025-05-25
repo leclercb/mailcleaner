@@ -7,6 +7,10 @@ The file needs to be created in the `config` folder with name `config.yml`.
 [source]
 ----
 quarkus:
+  log:
+    category:
+      "be.blit.mailcleaner":
+        level: DEBUG
   rest-client:
     rspamd:
       url: http://rspamd:11333

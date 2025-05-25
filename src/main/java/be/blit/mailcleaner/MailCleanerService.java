@@ -39,7 +39,7 @@ public class MailCleanerService {
             Properties props = new Properties();
             props.put("mail.store.protocol", "imaps");
 
-            log.info("Connecting to imap server {}:{}", config.imap().host(), config.imap().port());
+            log.debug("Connecting to imap server {}:{}", config.imap().host(), config.imap().port());
 
             Session session = Session.getDefaultInstance(props);
             Store store = session.getStore();
@@ -50,18 +50,18 @@ public class MailCleanerService {
                     config.imap().password()
             );
 
-            log.info("Connected to imap server {}:{}", config.imap().host(), config.imap().port());
-            log.info("Folder separator: {}", store.getDefaultFolder().getSeparator());
+            log.debug("Connected to imap server {}:{}", config.imap().host(), config.imap().port());
+            log.debug("Folder separator: {}", store.getDefaultFolder().getSeparator());
 
             List<String> remoteFolders = Stream.of(store.getDefaultFolder().list("*")).map(Folder::getFullName).toList();
 
-            log.info("Mailbox contains {} folders", remoteFolders.size());
-            remoteFolders.forEach(folder -> log.info("Remote folder: {}", folder));
+            log.debug("Mailbox contains {} folders", remoteFolders.size());
+            remoteFolders.forEach(folder -> log.debug("Remote folder: {}", folder));
 
             List<String> folders = config.folders().orElseGet(Collections::emptyList);
 
-            log.info("Start cleaning {} folders", folders.size());
-            folders.forEach(folder -> log.info("Folder to clean: {}", folder));
+            log.debug("Start cleaning {} folders", folders.size());
+            folders.forEach(folder -> log.debug("Folder to clean: {}", folder));
 
             for (String folderName : folders) {
                 log.info("Start cleaning folder \"{}\"", folderName);
@@ -72,13 +72,13 @@ public class MailCleanerService {
                     continue;
                 }
 
-                log.info("Opening folder \"{}\"", folderName);
+                log.debug("Opening folder \"{}\"", folderName);
 
                 folder.open(Folder.READ_WRITE);
 
                 Message[] messages = folder.search(new FlagTerm(new Flags(Flags.Flag.DELETED), false));
 
-                log.info("Found {} messages in folder \"{}\"", messages.length, folderName);
+                log.debug("Found {} messages in folder \"{}\"", messages.length, folderName);
 
                 for (Message message : messages) {
                     Address[] from = message.getFrom();
@@ -112,7 +112,7 @@ public class MailCleanerService {
                 log.info("Finished cleaning folder \"{}\"", folderName);
             }
 
-            log.info("Finished cleaning {} folders", folders.size());
+            log.debug("Finished cleaning {} folders", folders.size());
 
             store.close();
 
