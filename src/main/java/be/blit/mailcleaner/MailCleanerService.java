@@ -55,13 +55,11 @@ public class MailCleanerService {
 
             List<String> remoteFolders = Stream.of(store.getDefaultFolder().list("*")).map(Folder::getFullName).toList();
 
-            log.debug("Mailbox contains {} folders", remoteFolders.size());
-            remoteFolders.forEach(folder -> log.debug("Remote folder: {}", folder));
+            log.debug("Mailbox contains {} folders: {}", remoteFolders.size(), remoteFolders);
 
             List<String> folders = config.folders().orElseGet(Collections::emptyList);
 
-            log.debug("Start cleaning {} folders", folders.size());
-            folders.forEach(folder -> log.debug("Folder to clean: {}", folder));
+            log.debug("Start cleaning {} folders: {}", folders.size(), folders);
 
             for (String folderName : folders) {
                 log.info("Start cleaning folder \"{}\"", folderName);
