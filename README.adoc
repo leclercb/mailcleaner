@@ -10,7 +10,7 @@ quarkus:
   log:
     category:
       "be.blit.mailcleaner":
-        level: DEBUG
+        level: INFO
   rest-client:
     rspamd:
       url: http://rspamd:11333
@@ -39,6 +39,8 @@ services:
   mailcleaner:
     image: ghcr.io/leclercb/mailcleaner:main
     container_name: mailcleaner
+    depends_on:
+      - rspamd
     volumes:
       - /volume1/docker/mailcleaner/config:/config:rw
     ports:
