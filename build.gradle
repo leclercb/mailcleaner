@@ -1,34 +1,47 @@
 plugins {
     id 'java'
-    id 'io.quarkus' version '3.11.0'
+    id 'io.quarkus'
 }
-
-group = 'be.blit.mailcleaner'
-version = '1.0.0'
 
 repositories {
     mavenCentral()
+    mavenLocal()
 }
 
 ext {
     jakartaMailVersion = '2.0.1'
     lombokVersion = '1.18.32'
-    quarkusVersion = '3.11.0'
 }
 
 dependencies {
     compileOnly "org.projectlombok:lombok:${lombokVersion}"
     annotationProcessor "org.projectlombok:lombok:${lombokVersion}"
 
-    implementation enforcedPlatform("io.quarkus:quarkus-bom:${quarkusVersion}")
-
+    implementation enforcedPlatform("${quarkusPlatformGroupId}:${quarkusPlatformArtifactId}:${quarkusPlatformVersion}")
+    
     implementation 'io.quarkus:quarkus-config-yaml'
-    implementation 'io.quarkus:quarkus-rest-client-reactive-jackson'
-    implementation 'io.quarkus:quarkus-resteasy-reactive'
-    implementation 'io.quarkus:quarkus-resteasy-reactive-jackson'
+    implementation 'io.quarkus:quarkus-rest'
+    implementation 'io.quarkus:quarkus-rest-client-jackson'
     implementation 'io.quarkus:quarkus-scheduler'
 
     implementation "com.sun.mail:jakarta.mail:${jakartaMailVersion}"
+}
+
+group 'be.blit.mailcleaner'
+version '1.0.0-SNAPSHOT'
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_21
+    targetCompatibility = JavaVersion.VERSION_21
+}
+
+compileJava {
+    options.encoding = 'UTF-8'
+    options.compilerArgs << '-parameters'
+}
+
+compileTestJava {
+    options.encoding = 'UTF-8'
 }
 
 tasks.withType(JavaCompile).configureEach {
